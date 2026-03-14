@@ -18,21 +18,25 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
+          python-version: "3.12"
 
-      - name: Set up Python
-        run: uv python install 3.12
+      - name: Check if uv.lock is out of sync
+        # This will fail the CI immediately if pyproject.toml and uv.lock don't match
+        run: uv lock --check
 
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
-      - name: Lint with Ruff
-        # Runs both 'check' (rules) and 'format' (style)
-        run: |
-          uv run ruff check .
-          uv run ruff format --check .
+      - name: Cache pre-commit
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-py3.12-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-py3.12-
 
-      - name: Type Check with Mypy
-        run: uv run mypy src
+      - name: Run all checks via pre-commit
+        run: uv run pre-commit run --all-files
 
       - name: Run Tests
         run: uv run pytest
