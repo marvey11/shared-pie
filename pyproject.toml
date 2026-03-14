@@ -1,0 +1,67 @@
+[project]
+name = "shared-pie"
+version = "0.1.0"
+description = "Shared common code for Python projects"
+readme = "README.md"
+authors = [
+    { name = "Marco Wegner", email = "673439+marvey11@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
+    "ruff>=0.15.6",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.9,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+managed = true
+# This ensures that when you 'uv lock', it knows where the source is
+package = true
+
+[tool.uv-build]
+# Optional: explicitly define what to include if your structure gets complex
+exclude = ["tests/*", "docs/*"]
+
+[tool.ruff]
+line-length = 80
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/F = Defaults, I = Isort (imports), N = Pep8-naming, UP = PyUpgrade
+select = ["E", "F", "I", "N", "UP"]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+# Ensures a trailing comma in multi-line lists/dicts (better for git diffs)
+skip-magic-trailing-comma = false
+
+# This handles the indent style (usually 4 spaces)
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["shared_pie"]
+strict = true
+explicit_package_bases = true
+# This helps mypy find types within your venv
+ignore_missing_imports = false
+# Common strict flags
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
